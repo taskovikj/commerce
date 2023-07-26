@@ -1,0 +1,25 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+
+    <ul>
+        {% for listing in listings %}
+            <li>
+                <strong>{{ listing.title }}</strong><br>
+                Description: {{ listing.description }}<br>
+                Starting Price: ${{ listing.starting_price }}<br>
+                Current Price: ${{ listing.current_price }}<br>
+                {% if listing.image_url %}
+                    <img src="{{ listing.image_url }}" alt="{{ listing.title }}" style="max-width: 200px;">
+                {% endif %}
+                <p>Creator: {{ listing.creator }}</p>
+                <p>Categories:
+                    {% for category in listing.categories.all %}
+                        {{ category.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
