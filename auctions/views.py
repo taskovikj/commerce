@@ -1,11 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Listing
+from .models import Listing, Watchlist
 
 from .models import User, Category
 
@@ -87,6 +87,8 @@ def create_listing(request):
         starting_price = request.POST.get('starting_price')
         image_url = request.POST.get('image_url')
         category_id = request.POST.get('category')
+        user = request.user
+        print(user)
 
         listing = Listing(
             title=title,
@@ -94,6 +96,7 @@ def create_listing(request):
             starting_price=starting_price,
             current_price=starting_price,
             image_url=image_url,
+            creator=request.user
         )
         listing.save()
 
@@ -103,3 +106,58 @@ def create_listing(request):
         return redirect('/')
 
     return render(request, 'create_listing.html', {'categories': categories})
+
+@login_required
+def add_to_watchlist(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    user_watchlist, created = Watchlist.objects.get_or_create(user=request.user)
+    user_watchlist.listings.add(listing)
+    return redirect('/')
+
+@login_required
+def remove_from_watchlist(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    user_watchlist, created = Watchlist.objects.get_or_create(user=request.user)
+    user_watchlist.listings.remove(listing)
+    return redirect('/watchlist/')
+
+
+def listing_detail(request, listing_id):
+    listing = get_object_or_404(Listing, pk=listing_id)
+
+    # Check if the user is the creator of the listing
+    if listing.creator == request.user:
+        # Delete the listing from the database
+        listing.delete()
+
+    return redirect('/')
+
+
+@login_required
+def my_listings(request):
+    user_listings = Listing.objects.filter(creator=request.user)
+    return render(request, 'my_listings.html', {'user_listings': user_listings})
+
+
+
+
+@login_required
+def list_watchlist(request):
+    user_watchlist, created = Watchlist.objects.get_or_create(user=request.user)
+    watchlist_listings = user_watchlist.listings.all()
+    return render(request, 'watchlist.html', {'watchlist_listings': watchlist_listings})
+
+
+@login_required
+def delete_listing(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    user_watchlist, created = Watchlist.objects.get_or_create(user=request.user)
+    user_watchlist.listings.remove(listing)
+    return redirect('/watchlist/')
+
+
+def delete_listing(request, listing_id):
+    listing = get_object_or_404(Listing, pk=listing_id)
+    if listing.creator == request.user:
+        listing.delete()
+    return redirect('my_listings')

@@ -1,14 +1,12 @@
-<!-- myapp/templates/active_listings.html -->
-
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+    <h2>Watchlist</h2>
 
     <ul>
-        {% for listing in listings %}
+        {% for listing in watchlist_listings %}
             <li>
-                <strong><a href="{% url 'listing_detail' listing.id %}">{{ listing.title }}</a></strong><br>
+                <strong>{{ listing.title }}</strong><br>
                 Description: {{ listing.description }}<br>
                 Starting Price: ${{ listing.starting_price }}<br>
                 Current Price: ${{ listing.current_price }}<br>
@@ -21,13 +19,9 @@
                         {{ category.name }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 </p>
-                <form action="{% url 'add_to_watchlist' listing.id %}" method="post">
+            <form action="{% url 'remove_from_watchlist' listing.id %}" method="post">
                     {% csrf_token %}
-                    {% if listing in user_watchlist %}
-                        <button type="submit" disabled>Already in Watchlist</button>
-                    {% else %}
-                        <button type="submit">Add to Watchlist</button>
-                    {% endif %}
+                    <button type="submit">Remove from Watchlist</button>
                 </form>
             </li>
         {% endfor %}
