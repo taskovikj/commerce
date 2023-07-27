@@ -2,32 +2,46 @@
 
 {% block body %}
     <h2>Active Listings</h2>
+    <form action="{% url 'search_listings' %}" method="get">
+        <input type="text" name="query" placeholder="Search...">
+        <label for="condition"></label>
+        <label for="price_filter">Price Filter:</label>
+        <select name="price_filter" id="price_filter">
+            <option value="">All</option>
+            <option value="0-100">0 - 100</option>
+            <option value="101-200">101 - 200</option>
+            <option value="201-300">201 - 300</option>
+            <option value="300+">300+</option>
+        </select>
+    <button type="submit">Submit</button>
+    </form>
 
-    <ul>
+
+    <div class="listing-cards">
         {% for listing in listings %}
-            <li>
-                <strong><a href="{% url 'listing_detail' listing.id %}">{{ listing.title }}</a></strong><br>
-                {% if listing.image_url %}
-                    <img src="{{ listing.image_url }}" alt="{{ listing.title }}" style="max-width: 400px;"><br>
-                {% endif %}
-                Description: {{ listing.description }}<br>
-                Starting Price: ${{ listing.starting_price }}<br>
-                Current Price: ${{ listing.current_price }}<br>
-                <p>Creator: {{ listing.creator }}</p>
-                <p>Categories:
-                    {% for category in listing.categories.all %}
-                        <strong><a href="{% url 'category_listings' category.id %}">{{ category.name }}</a></strong><br>
-                    {% endfor %}
-                </p>
-                <form action="{% url 'add_to_watchlist' listing.id %}" method="post">
-                    {% csrf_token %}
-                    {% if listing in watchlist %}
-                        <button type="submit" disabled>Already in Watchlist</button>
+            <div class="listing-card">
+                <div class="image-container">
+                    {% if listing.image_url %}
+                        <img src="{{ listing.image_url }}" alt="{{ listing.title }}">
                     {% else %}
-                        <button type="submit">Add to Watchlist</button>
+                        <!-- Add a placeholder image here if there's no image_url -->
+                        <div class="placeholder-image"></div>
                     {% endif %}
-                </form>
-            </li>
+                </div>
+                <div class="listing-details">
+                    <strong><a href="{% url 'listing_detail' listing.id %}">{{ listing.title }}</a></strong><br>
+                    <p>Starting Price: ${{ listing.starting_price }}</p>
+                    <form action="{% url 'add_to_watchlist' listing.id %}" method="post">
+                        {% csrf_token %}
+                        {% if listing in watchlist %}
+                            <button class="card-button" type="submit" disabled>Already in Watchlist</button>
+                        {% else %}
+                            <button type="submit">Add to Watchlist</button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
+    </div>
 {% endblock %}
+

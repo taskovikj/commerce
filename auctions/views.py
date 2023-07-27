@@ -12,10 +12,41 @@ from .models import User, Category
 
 def index(request):
     listings = Listing.objects.all()
-    user_watchlist, created = Watchlist.objects.get_or_create(user=request.user)
-    watchlist_listings = user_watchlist.listings.all()
+
     print(listings)
-    return render(request, "auctions/index.html", {'listings': listings, 'watchlist': watchlist_listings})
+    return render(request, "auctions/index.html", {'listings': listings})
+
+
+def search_listings2(request):
+    query = request.GET.get('query')
+    if query:
+        listings = Listing.objects.filter(title__icontains=query)
+    else:
+        listings = Listing.objects.all()
+
+    return render(request, 'auctions/index.html', {'listings': listings})
+
+
+def search_listings(request):
+    query = request.GET.get('query')
+    price_filter = request.GET.get('price_filter')
+    listings = Listing.objects.all()
+
+    if query:
+        listings = listings.filter(title__icontains=query)
+
+
+    if price_filter:
+        if price_filter == '0-100':
+            listings = listings.filter(starting_price__range=(0, 100))
+        elif price_filter == '101-200':
+            listings = listings.filter(starting_price__range=(101, 200))
+        elif price_filter == '201-300':
+            listings = listings.filter(starting_price__range=(201, 300))
+        elif price_filter == '300+':
+            listings = listings.filter(starting_price__gte=300)
+
+    return render(request, 'auctions/index.html', {'listings': listings})
 
 
 def login_view(request):

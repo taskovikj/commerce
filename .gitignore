@@ -9,6 +9,20 @@ media
 # Backup files #
 *.bak
 
+.idea/**
+*/.idea/*
+
+# Visual Studio Code
+.vscode/**
+
+# Local History for Visual Studio Code
+.history/**
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
 # If you are using PyCharm #
 # User-specific stuff
 .idea/**/workspace.xml
