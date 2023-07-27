@@ -14,4 +14,18 @@
             {{ category.name }}{% if not forloop.last %}, {% endif %}
         {% endfor %}
     </p>
+
+    <h2>Comments:</h2>
+    {% for comment in listing.comments.all %}
+        <p>{{ comment.text }} (by {{ comment.user.username }})</p>
+    {% empty %}
+        <p>No comments yet.</p>
+    {% endfor %}
+
+    <h2>Add Comment:</h2>
+    <form method="post" action="{% url 'add_comment_to_listing' listing.id %}">
+        {% csrf_token %}
+        <textarea name="text" cols="30" rows="4"></textarea>
+        <input type="submit" value="Add Comment">
+    </form>
 {% endblock %}

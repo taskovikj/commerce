@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Listing, Watchlist
+from .models import Listing, Watchlist, Comment
 
 from .models import User, Category
 
@@ -126,15 +126,19 @@ def remove_from_watchlist(request, listing_id):
     return redirect('/watchlist/')
 
 
+
 def listing_detail(request, listing_id):
-    listing = get_object_or_404(Listing, pk=listing_id)
+    listing = get_object_or_404(Listing, id=listing_id)
+    comments = listing.comments.all()
 
-    # Check if the user is the creator of the listing
-    if listing.creator == request.user:
-        # Delete the listing from the database
-        listing.delete()
+    if request.method == 'POST':
+        text = request.POST.get('text')
+        if text.strip():  # Ensure the comment is not empty
+            comment = Comment.objects.create(listing=listing, user=request.user, text=text)
+            comment.save()
+            return redirect('listing_detail', listing_id=listing.id)
 
-    return redirect('/')
+    return render(request, 'listing_detail.html', {'listing': listing, 'comments': comments})
 
 
 @login_required
@@ -179,3 +183,18 @@ def delete_category(request, category_id):
         category.delete()
 
     return redirect('create_category')
+
+@login_required
+def add_comment_to_listing(request, listing_id):
+    listing = get_object_or_404(Listing, id=listing_id)
+
+    if request.method == 'POST':
+        text = request.POST.get('text')
+        if text.strip():  # Ensure the comment is not empty
+            comment = Comment.objects.create(listing=listing, user=request.user, text=text)
+            comment.save()
+            return redirect('listing_detail', listing_id=listing.id)
+
+    return redirect('listing_detail', listing_id=listing.id)
+
+
