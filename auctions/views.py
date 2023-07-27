@@ -12,8 +12,10 @@ from .models import User, Category
 
 def index(request):
     listings = Listing.objects.all()
+    user_watchlist, created = Watchlist.objects.get_or_create(user=request.user)
+    watchlist_listings = user_watchlist.listings.all()
     print(listings)
-    return render(request, "auctions/index.html", {'listings': listings})
+    return render(request, "auctions/index.html", {'listings': listings, 'watchlist': watchlist_listings})
 
 
 def login_view(request):
@@ -126,19 +128,44 @@ def remove_from_watchlist(request, listing_id):
     return redirect('/watchlist/')
 
 
-
+@login_required
 def listing_detail(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id)
     comments = listing.comments.all()
 
     if request.method == 'POST':
-        text = request.POST.get('text')
-        if text.strip():  # Ensure the comment is not empty
-            comment = Comment.objects.create(listing=listing, user=request.user, text=text)
-            comment.save()
-            return redirect('listing_detail', listing_id=listing.id)
+        # if bidding
+        if 'bid_amount' in request.POST:
+            bid_amount = float(request.POST.get('bid_amount'))
+            if bid_amount >= listing.starting_price and bid_amount > listing.current_price:
+                listing.current_price = bid_amount
+                listing.highest_bidder = request.user
+                listing.save()
+            else:
+                error_message = "Invalid bid amount. The bid must be at least as large as the starting bid and greater than any other bids placed."
+                return render(request, 'listing_detail.html',
+                              {'listing': listing, 'comments': comments, 'error_message': error_message})
+
+        # if commenting
+        elif 'text' in request.POST:
+            text = request.POST.get('text')
+            if text.strip():
+                comment = Comment.objects.create(listing=listing, user=request.user, text=text)
+                comment.save()
+                return redirect('listing_detail', listing_id=listing.id)
 
     return render(request, 'listing_detail.html', {'listing': listing, 'comments': comments})
+
+
+@login_required
+def close_auction(request, listing_id):
+    listing = get_object_or_404(Listing, id=listing_id)
+
+    if request.user == listing.creator:
+        listing.closed = True
+        listing.save()
+
+    return redirect('listing_detail', listing_id=listing.id)
 
 
 @login_required
@@ -169,7 +196,7 @@ def create_category(request):
         category = Category(name=name)
         category.save()
 
-        return redirect('homepage')
+        return redirect('/create_category')
 
     categories = Category.objects.all()
     return render(request, 'create_category.html', {'categories': categories})
@@ -183,6 +210,7 @@ def delete_category(request, category_id):
         category.delete()
 
     return redirect('create_category')
+
 
 @login_required
 def add_comment_to_listing(request, listing_id):
@@ -198,3 +226,8 @@ def add_comment_to_listing(request, listing_id):
     return redirect('listing_detail', listing_id=listing.id)
 
 
+@login_required
+def list_category(request, category_id):
+    cat = get_object_or_404(Category, id=category_id)
+    listings = Listing.objects.filter(categories=category_id)
+    return render(request, 'categories_list.html', {'category': cat, 'listings': listings})

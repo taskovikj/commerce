@@ -1,11 +1,6 @@
-<!-- myapp/templates/create_listing.html -->
+{% extends "auctions/layout.html" %}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Listing</title>
-</head>
-<body>
+{% block body %}
     <h1>Create Listing</h1>
     <form method="post">
         {% csrf_token %}
@@ -17,7 +12,6 @@
 
         <label for="starting_price">Starting Price:</label>
         <input type="number" name="starting_price" step="0.01" required><br>
-
 
         <label for="image_url">Image URL (Optional):</label>
         <input type="url" name="image_url"><br>
@@ -32,5 +26,4 @@
 
         <input type="submit" value="Create Listing">
     </form>
-</body>
-</html>
+{% endblock %}

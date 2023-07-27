@@ -16,7 +16,7 @@
     <ul>
         {% for category in categories %}
             <li>
-                {{ category.name }}
+                <strong><a href="{% url 'category_listings' category.id %}">{{ category.name }}</a></strong><br>
                 <form action="{% url 'delete_category' category.id %}" method="post" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit">Delete</button>
