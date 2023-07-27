@@ -74,7 +74,9 @@ def login_required(view_func):
             return view_func(request, *args, **kwargs)
         else:
             return redirect('/login')
+
     return _wrapped_view
+
 
 @login_required
 def create_listing(request):
@@ -107,12 +109,14 @@ def create_listing(request):
 
     return render(request, 'create_listing.html', {'categories': categories})
 
+
 @login_required
 def add_to_watchlist(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
     user_watchlist, created = Watchlist.objects.get_or_create(user=request.user)
     user_watchlist.listings.add(listing)
     return redirect('/')
+
 
 @login_required
 def remove_from_watchlist(request, listing_id):
@@ -139,8 +143,6 @@ def my_listings(request):
     return render(request, 'my_listings.html', {'user_listings': user_listings})
 
 
-
-
 @login_required
 def list_watchlist(request):
     user_watchlist, created = Watchlist.objects.get_or_create(user=request.user)
@@ -148,16 +150,32 @@ def list_watchlist(request):
     return render(request, 'watchlist.html', {'watchlist_listings': watchlist_listings})
 
 
-@login_required
-def delete_listing(request, listing_id):
-    listing = Listing.objects.get(pk=listing_id)
-    user_watchlist, created = Watchlist.objects.get_or_create(user=request.user)
-    user_watchlist.listings.remove(listing)
-    return redirect('/watchlist/')
-
-
 def delete_listing(request, listing_id):
     listing = get_object_or_404(Listing, pk=listing_id)
     if listing.creator == request.user:
         listing.delete()
     return redirect('my_listings')
+
+
+@login_required
+def create_category(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+
+        category = Category(name=name)
+        category.save()
+
+        return redirect('homepage')
+
+    categories = Category.objects.all()
+    return render(request, 'create_category.html', {'categories': categories})
+
+
+@login_required
+def delete_category(request, category_id):
+    category = get_object_or_404(Category, pk=category_id)
+
+    if request.method == 'POST':
+        category.delete()
+
+    return redirect('create_category')
