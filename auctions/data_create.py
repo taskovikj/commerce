@@ -44,28 +44,34 @@ def create_listings():
     categories = Category.objects.all()
     users = User.objects.all()
 
-    for i in range(20000):
-        title = generate_random_string(20)
+    for i in range(10000):
+        title = f"Title{i + 1}"
         description = generate_random_string(100)
         starting_price = generate_random_price()
         current_price = starting_price
-        image_url = f"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSja_QO2TJibwnY5UbYEjOUidB_Ein_uovozLfGae2P&s"
+        image_url = f"https://www.shutterstock.com/image-vector/hot-sale-promotion-label-tag-illustration-1410327293"
         category = random.choice(categories)
         creator = random.choice(users)
 
-        Listing.objects.create(
+        listing = Listing.objects.create(
             title=title,
             description=description,
             starting_price=starting_price,
             current_price=current_price,
             image_url=image_url,
             creator=creator,
+
         )
+        listing.categories.add(category)
+
+
+
+
     print("Listings created successfully.")
 
 
 
 if __name__ == "__main__":
-    create_categories()
-    create_users()
+    # create_categories()
+    # create_users()
     create_listings()

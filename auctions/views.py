@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db import IntegrityError
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
@@ -10,31 +11,18 @@ from .models import Listing, Watchlist, Comment
 
 from .models import User, Category
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 def index(request):
-    listings = Listing.objects.all()
-
-    return render(request, "auctions/index.html", {'listings': listings})
-
-
-def search_listings2(request):
-    query = request.GET.get('query')
-    if query:
-        listings = Listing.objects.filter(title__icontains=query)
-    else:
-        listings = Listing.objects.all()
-
-    return render(request, 'auctions/index.html', {'listings': listings})
-
-
-def search_listings(request):
     query = request.GET.get('query')
     price_filter = request.GET.get('price_filter')
-    listings = Listing.objects.all()
     sort_by = request.GET.get('sort_by')
     listings_photo = request.GET.get('show_with_photo')
     no_bidders = request.GET.get('no_bidders')
     active_listings = request.GET.get('active_listings')
+
+    listings = Listing.objects.all()
 
     if query:
         listings = listings.filter(title__icontains=query)
@@ -65,7 +53,18 @@ def search_listings(request):
     if active_listings:
         listings = listings.exclude(closed=True)
 
-    return render(request, 'auctions/index.html', {'listings': listings})
+    paginator = Paginator(listings, 100)
+    page = request.GET.get('page')
+    try:
+        listings = paginator.page(page)
+    except PageNotAnInteger:
+        listings = paginator.page(1)
+    except EmptyPage:
+        listings = paginator.page(paginator.num_pages)
+
+    return render(request, 'auctions/index.html', {
+        'listings': listings,
+    })
 
 
 def login_view(request):
@@ -140,7 +139,6 @@ def create_listing(request):
         starting_price = request.POST.get('starting_price')
         image_url = request.POST.get('image_url')
         category_id = request.POST.get('category')
-        user = request.user
 
         listing = Listing(
             title=title,

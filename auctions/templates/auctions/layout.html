@@ -7,7 +7,32 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
 
-    <style>
+<style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .step-links a {
+        color: #007BFF;
+        text-decoration: none;
+        padding: 5px 10px;
+        margin: 0 5px;
+        border: 1px solid #007BFF;
+        border-radius: 5px;
+    }
+
+    .step-links a:hover {
+        background-color: #007BFF;
+        color: #fff;
+    }
+
+    .current {
+        margin: 0 10px;
+        font-weight: bold;
+    }
+
     .listing-cards {
         margin-top: 20px; /* Add some spacing between cards */
     }
