@@ -102,7 +102,7 @@
                     {% endif %}
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <p class="nav-link">Signed in as <strong>{{ user.username }}</strong>.</p>
+                            <a class="nav-link">Signed in as <strong>{{ user.username }}</strong>.</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
