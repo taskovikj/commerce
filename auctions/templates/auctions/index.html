@@ -13,7 +13,21 @@
             <option value="201-300">201 - 300</option>
             <option value="300+">300+</option>
         </select>
-    <button type="submit">Submit</button>
+    <label for="sort_by">Sort by:</label>
+    <select name="sort_by" id="sort_by">
+        <option value="">-- Select --</option>
+        <option value="price_high_low">Price High to Low</option>
+        <option value="price_low_high">Price Low to High</option>
+        <option value="titleAZ">Title A to Z</option>
+    </select>
+    <input type="checkbox" name="show_with_photo" id="show_with_photo">
+    <label for="show_with_photo">Only listings with photos</label>
+        <input type="checkbox" name="no_bidders" id="no_bidders">
+    <label for="no_bidders">No bidders</label>
+        <input type="checkbox" name="active_listings" id="active_listings">
+    <label for="active_listings">Only active auctions</label>
+
+    <input type="submit" value="Search">
     </form>
 
 

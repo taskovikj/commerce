@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
+from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
@@ -13,7 +14,6 @@ from .models import User, Category
 def index(request):
     listings = Listing.objects.all()
 
-    print(listings)
     return render(request, "auctions/index.html", {'listings': listings})
 
 
@@ -31,10 +31,13 @@ def search_listings(request):
     query = request.GET.get('query')
     price_filter = request.GET.get('price_filter')
     listings = Listing.objects.all()
+    sort_by = request.GET.get('sort_by')
+    listings_photo = request.GET.get('show_with_photo')
+    no_bidders = request.GET.get('no_bidders')
+    active_listings = request.GET.get('active_listings')
 
     if query:
         listings = listings.filter(title__icontains=query)
-
 
     if price_filter:
         if price_filter == '0-100':
@@ -45,6 +48,22 @@ def search_listings(request):
             listings = listings.filter(starting_price__range=(201, 300))
         elif price_filter == '300+':
             listings = listings.filter(starting_price__gte=300)
+
+    if sort_by == 'price_high_low':
+        listings = listings.order_by('-starting_price')
+    elif sort_by == 'price_low_high':
+        listings = listings.order_by('starting_price')
+    elif sort_by == 'titleAZ':
+        listings = listings.order_by('title')
+
+    if no_bidders:
+        listings = listings.exclude(highest_bidder__isnull=False)
+
+    if listings_photo:
+        listings = listings.exclude(image_url='')
+
+    if active_listings:
+        listings = listings.exclude(closed=True)
 
     return render(request, 'auctions/index.html', {'listings': listings})
 
@@ -114,7 +133,6 @@ def login_required(view_func):
 @login_required
 def create_listing(request):
     categories = Category.objects.all()
-    print(categories)
     if request.method == 'POST':
 
         title = request.POST.get('title')
@@ -123,7 +141,6 @@ def create_listing(request):
         image_url = request.POST.get('image_url')
         category_id = request.POST.get('category')
         user = request.user
-        print(user)
 
         listing = Listing(
             title=title,
