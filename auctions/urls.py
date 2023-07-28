@@ -21,4 +21,5 @@ urlpatterns = [
     path('listing/<int:listing_id>/close/', views.close_auction, name='close_auction'),
     path('category_listings/<int:category_id>/', views.list_category, name='category_listings'),
     path('search/', views.search_listings, name='search_listings'),
+    path('my_profile/', views.my_profile, name='my_profile')
 ]

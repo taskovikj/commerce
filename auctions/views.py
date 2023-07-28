@@ -279,3 +279,9 @@ def list_category(request, category_id):
     cat = get_object_or_404(Category, id=category_id)
     listings = Listing.objects.filter(categories=category_id)
     return render(request, 'categories_list.html', {'category': cat, 'listings': listings})
+
+
+@login_required
+def my_profile(request):
+    user = request.user
+    return render(request, 'my_profile.html', {'user': user})
