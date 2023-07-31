@@ -7,7 +7,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Listing, Watchlist, Comment
+from .models import Listing, Watchlist, Comment,BiddingLogg
 
 from .models import User, Category
 
@@ -187,8 +187,15 @@ def listing_detail(request, listing_id):
                 listing.current_price = bid_amount
                 listing.highest_bidder = request.user
                 listing.save()
+                logs = BiddingLogg(
+                    user=request.user,
+                    listing1=listing,
+                    bid_amount=bid_amount,
+                )
+                logs.save()
             else:
-                error_message = "Invalid bid amount. The bid must be at least as large as the starting bid and greater than any other bids placed."
+                error_message = "Invalid bid amount. The bid must be at least as large as the starting bid and " \
+                                "greater than any other bids placed."
                 return render(request, 'listing_detail.html',
                               {'listing': listing, 'comments': comments, 'error_message': error_message})
 

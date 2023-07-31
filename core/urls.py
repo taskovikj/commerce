@@ -1,4 +1,4 @@
-"""commerce URL Configuration
+"""core URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.0/topics/http/urls/
@@ -16,10 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from auctions import views
+from task2.views import ReviewEmailView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("auctions.urls")),
-    path('create_listing/', views.create_listing, name='create_listing'),
+    path('reviews/', ReviewEmailView.as_view(), name="reviews"),
 ]
