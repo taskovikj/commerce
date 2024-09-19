@@ -58,7 +58,6 @@ The platform consists of a **Vue.js** frontend and a **Django** backend.
 - **Axios**
 - **Vue Router**
 - **Bootstrap**
-- 
 #### Backend (Django)
 - **Django**
 - **MySql Databse**
