@@ -1,46 +1,45 @@
 <template>
   <div class="container my-5">
     <div v-if="listing.title" class="card">
-      <div class="row g-0">
-        <div class="col-md-4">
-          <img v-if="listing.image_url" :src="listing.image_url" class="img-fluid rounded-start" :alt="listing.title" />
-          <div v-else class="d-flex justify-content-center align-items-center bg-light" style="height: 250px;">
-            <p class="text-muted">No photo available</p>
-          </div>
+      <div class="card-body text-center">
+        <img
+          v-if="listing.image_url"
+          :src="listing.image_url"
+          class="img-fluid listing-image"
+          :alt="listing.title"
+        />
+        <div v-else class="d-flex justify-content-center align-items-center bg-light no-photo">
+          <p class="text-muted">No photo available</p>
         </div>
 
-        <div class="col-md-8">
-          <div class="card-body">
-            <h2 class="card-title mb-3">{{ listing.title }}</h2>
-            <p class="card-text">{{ listing.description }}</p>
-            <p><strong>Category:</strong> {{ listing.category_name || 'N/A' }}</p>
-            <p><strong>Created At:</strong> {{ new Date(listing.created_at).toLocaleDateString() }}</p>
-            <p><strong>Starting Price:</strong> ${{ listing.starting_price }}</p>
-            <p class="fw-bold">Current Price: ${{ listing.current_price }}</p>
-            <p>Highest Bidder: {{ listing.highest_bidder || 'No bids yet' }}</p>
+        <h2 class="card-title my-3">{{ listing.title }}</h2>
+        <p class="card-text">{{ listing.description }}</p>
+        <p><strong>Category:</strong> {{ listing.category_name || 'N/A' }}</p>
+        <p><strong>Created At:</strong> {{ new Date(listing.created_at).toLocaleDateString() }}</p>
+        <p><strong>Starting Price:</strong> ${{ listing.starting_price }}</p>
+        <p class="fw-bold">Current Price: ${{ listing.current_price }}</p>
+        <p>Highest Bidder: {{ listing.highest_bidder || 'No bids yet' }}</p>
 
-            <div v-if="listing.closed" class="alert alert-danger mt-3">
-              This auction is closed. {{ listing.highest_bidder ? `Winner: ${listing.highest_bidder}` : 'No bids were placed.' }}
-            </div>
+        <div v-if="listing.closed" class="alert alert-danger mt-3">
+          This auction is closed. {{ listing.highest_bidder ? `Winner: ${listing.highest_bidder}` : 'No bids were placed.' }}
+        </div>
 
-            <div v-if="isOwner && !listing.closed" class="mt-3">
-              <button @click="closeAuction" class="btn btn-danger">Close Auction</button>
-            </div>
+        <div v-if="isOwner && !listing.closed" class="mt-3">
+          <button @click="closeAuction" class="btn btn-danger">Close Auction</button>
+        </div>
 
-            <div v-if="!isOwner && !listing.closed && isAuthenticated" class="mt-4">
-              <h4>Place a Bid</h4>
-              <input v-model="bidAmount" type="number" step="0.01" class="form-control" placeholder="Enter your bid" />
-              <button @click="placeBid" class="btn btn-success mt-2" :disabled="isSubmitting">
-                {{ isSubmitting ? 'Placing Bid...' : 'Place Bid' }}
-              </button>
-              <div v-if="bidSuccessMessage" class="text-success mt-2">{{ bidSuccessMessage }}</div>
-              <div v-if="bidErrorMessage" class="text-danger mt-2">{{ bidErrorMessage }}</div>
-            </div>
+        <div v-if="!isOwner && !listing.closed && isAuthenticated" class="mt-4">
+          <h4>Place a Bid</h4>
+          <input v-model="bidAmount" type="number" step="0.01" class="form-control" placeholder="Enter your bid" />
+          <button @click="placeBid" class="btn btn-success mt-2" :disabled="isSubmitting">
+            {{ isSubmitting ? 'Placing Bid...' : 'Place Bid' }}
+          </button>
+          <div v-if="bidSuccessMessage" class="text-success mt-2">{{ bidSuccessMessage }}</div>
+          <div v-if="bidErrorMessage" class="text-danger mt-2">{{ bidErrorMessage }}</div>
+        </div>
 
-            <div v-if="!isAuthenticated" class="alert alert-warning mt-4">
-              Please <router-link to="/login">login</router-link> to place a bid.
-            </div>
-          </div>
+        <div v-if="!isAuthenticated" class="alert alert-warning mt-4">
+          Please <router-link to="/login">login</router-link> to place a bid.
         </div>
       </div>
     </div>
@@ -67,6 +66,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -205,9 +205,11 @@ export default {
 }
 
 .img-fluid {
-  object-fit: cover;
-  height: 100%;
+  object-fit: contain;
   width: 100%;
+  height: auto;
+  max-height: 300px; /* Adjusted to make it smaller */
+  margin-bottom: 20px;
 }
 
 .comments-section {
@@ -220,11 +222,12 @@ export default {
 }
 
 .no-photo {
-  height: 250px;
+  height: 300px; /* Adjusted to match the image height */
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #f8f9fa;
   color: #6c757d;
 }
+
 </style>
