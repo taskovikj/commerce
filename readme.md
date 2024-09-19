@@ -1,16 +1,27 @@
 # Django eCommerce project
 
 
-### Installation
+### 2. Installation
 
 ```bash
 git clone https://github.com/taskovikj/commerce.git
 ```
+
+
+
+### 2. Build Frontend
+
 ```bash
-cd commecre
+cd vue_frontend
+```
+```bash
+python npm run build
 ```
 
-### Run Migrations
+### 3.Set up database (On separate terminal)
+```bash
+cd commerce
+```
 
 ```bash
 python manage.py makemigrations aucions
@@ -20,7 +31,7 @@ python manage.py migrate
 ```
 
 
-### Build & Launch
+### 4.Build & Launch
 
 ```
 python manage.py runserver

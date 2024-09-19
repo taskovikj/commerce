@@ -16,10 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from task2.views import ReviewEmailView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("auctions.urls")),
-    path('reviews/', ReviewEmailView.as_view(), name="reviews"),
+    # path('reviews/', ReviewEmailView.as_view(), name="reviews"),
 ]
+

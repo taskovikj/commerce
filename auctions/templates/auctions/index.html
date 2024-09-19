@@ -1,7 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings showing {{ count_after }} listings of {{ count_before }}</h2>
+{#    <h2>Active Listings showing {{ count_after }} listings of {{ count_before }}</h2>#}
     <form action="{% url 'index' %}" method="get">
         <input type="text" name="query" placeholder="Search...">
         <label for="condition"></label>

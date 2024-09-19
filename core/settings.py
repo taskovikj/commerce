@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -31,6 +32,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'auctions',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,10 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'task1',
-    'task2',
-    'task3',
-    'django_celery_beat',
+
 
 ]
 
@@ -53,11 +52,12 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'auctions.middleware.PageVisitMiddleware'
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
+
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -65,7 +65,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'vue_frontend/dist')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -80,9 +80,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
+CSRF_COOKIE_HTTPONLY = False
+
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
+
 
 # Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+# https://docs.djangoproject.com/en/3.0/ref/settings/
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+
+    }
+}
 
 # DATABASES = {
 #     'default': {
@@ -93,34 +105,34 @@ WSGI_APPLICATION = 'core.wsgi.application'
 #     }
 # }
 
-if not DEBUG:
-    # Production Database configuration
-    print ("Production Database configuration")
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('PRODUCTION_POSTGRES_NAME'),
-            'USER': os.environ.get('PRODUCTION_POSTGRES_USER'),
-            'PASSWORD': os.environ.get('PRODUCTION_POSTGRES_PASSWORD'), # Use "postgres" when you are using docker or "qwer1234" when local
-            'HOST': os.environ.get('PRODUCTION_POSTGRES_HOST'),  # Use "pgdb" when you are using docker or "localhost" when local
-            'PORT': '5432',  # Or your database server port
-        }
-    }
-
-else:
-    # Local Database configuration
-    print ("Local Database configuration")
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': 'postgres',
-            'PASSWORD': 'postgres',
-            # Use "postgres" when you are using docker or "qwer1234" when local
-            'HOST': 'pgdb',  # Use "pgdb" when you are using docker or "localhost" when local
-            'PORT': '5432',  # Or your database server port
-        }
-    }
+# if not DEBUG:
+#     # Production Database configuration
+#     print ("Production Database configuration")
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': os.environ.get('PRODUCTION_POSTGRES_NAME'),
+#             'USER': os.environ.get('PRODUCTION_POSTGRES_USER'),
+#             'PASSWORD': os.environ.get('PRODUCTION_POSTGRES_PASSWORD'), # Use "postgres" when you are using docker or "qwer1234" when local
+#             'HOST': os.environ.get('PRODUCTION_POSTGRES_HOST'),  # Use "pgdb" when you are using docker or "localhost" when local
+#             'PORT': '5432',  # Or your database server port
+#         }
+#     }
+#
+# else:
+#     # Local Database configuration
+#     print ("Local Database configuration")
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': 'postgres',
+#             'USER': 'postgres',
+#             'PASSWORD': 'postgres',
+#             # Use "postgres" when you are using docker or "qwer1234" when local
+#             'HOST': 'pgdb',  # Use "pgdb" when you are using docker or "localhost" when local
+#             'PORT': '5432',  # Or your database server port
+#         }
+#     }
 
 AUTH_USER_MODEL = 'auctions.User'
 
@@ -157,7 +169,16 @@ USE_L10N = True
 USE_TZ = True
 
 
+
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'vue_frontend', 'dist'),  # Update this path to your Vue.js build directory
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+STATIC_URL = '/static/'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
+

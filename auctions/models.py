@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
+
 
 
 class User(AbstractUser):
@@ -23,6 +25,7 @@ class Listing(models.Model):
     image_url = models.URLField(blank=True, null=True)
     categories = models.ManyToManyField(Category)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
